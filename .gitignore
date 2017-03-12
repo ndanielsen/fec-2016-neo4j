@@ -95,4 +95,5 @@ ENV/
 
 *.zip
 *.csv
-*.txt
+data/**.txt
+by_date
