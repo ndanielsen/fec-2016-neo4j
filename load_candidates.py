@@ -4,6 +4,7 @@ Load candidate data into a local instance of neo4j
 Combine cn.txt with the headerfile to make for more understandable ETL
 
 Nathan @nate_somewhere
+2017-03-12
 """
 
 import os
@@ -43,64 +44,70 @@ if __name__ == '__main__':
         Data = namedtuple("Data", header)  # get names from column headers
         for data in map(Data._make, reader):
 
-            zipcode = Zipcode()
-            zipcode.ZIPCODE = data.CAND_ZIP
-            graph.push(zipcode)
-
-            city = City()
-            city.CITY = data.CAND_CITY
-            graph.push(city)
-
-            status = Status()
-            status.STATUS = data.CAND_STATUS
-            graph.push(status)
-
-            party = Party()
-            party.PARTY = data.CAND_PTY_AFFILIATION
-            graph.push(party)
-
-            year = ElectionYear()
-            year.YEAR = data.CAND_ELECTION_YR
-            graph.push(year)
-
-            state = State()
-            state.STATE = data.CAND_OFFICE_ST
-            graph.push(state)
-
-            office = Office()
-            office.OFFICE = data.CAND_OFFICE
-            graph.push(office)
-
-            district = District()
-            district.DISTRICT = data.CAND_OFFICE_DISTRICT
-            graph.push(district)
-
-
-
             cand = Candidate()
             cand.CAND_ID = data.CAND_ID
             cand.CAND_NAME = data.CAND_NAME
-            # cand.CAND_PTY_AFFILIATION = data.CAND_PTY_AFFILIATION
-
-            # cand.CAND_OFFICE_ST = data.CAND_OFFICE_ST
-            # cand.CAND_OFFICE = data.CAND_OFFICE
-            # cand.CAND_OFFICE_DISTRICT = data.CAND_OFFICE_DISTRICT
             cand.CAND_ICI = data.CAND_ICI
 
             cand.CAND_PCC = data.CAND_PCC
             cand.CAND_ST1 = data.CAND_ST1
             cand.CAND_ST2 = data.CAND_ST2
 
-            cand.CAND_PTY_AFFILIATION.add(party)
-            cand.CAND_ELECTION_YR.add(year)
-            cand.CAND_OFFICE_ST.add(state)
-            cand.CAND_STATUS.add(status)
-            cand.CAND_CITY.add(city)
+            zipcode = Zipcode.select(graph, data.CAND_ZIP).first()
+            if not zipcode:
+                zipcode = Zipcode()
+                zipcode.ZIPCODE = data.CAND_ZIP
+                graph.push(zipcode)
             cand.CAND_ZIP.add(zipcode)
 
-            cand.CAND_OFFICE_DISTRICT.add(district)
+            city = City.select(graph, data.CAND_CITY).first()
+            if not city:
+                city = City()
+                city.CITY = data.CAND_CITY
+                graph.push(city)
+            cand.CAND_CITY.add(city)
+
+            status = Status.select(graph, data.CAND_STATUS).first()
+            if not status:
+                status = Status()
+                status.STATUS = data.CAND_STATUS
+                graph.push(status)
+            cand.CAND_STATUS.add(status)
+
+            party = Party.select(graph, data.CAND_PTY_AFFILIATION).first()
+            if not party:
+                party = Party()
+                party.PARTY = data.CAND_PTY_AFFILIATION
+                graph.push(party)
+            cand.CAND_PTY_AFFILIATION.add(party)
+
+            year = ElectionYear.select(graph, data.CAND_ELECTION_YR ).first()
+            if not year:
+                year = ElectionYear()
+                year.YEAR = data.CAND_ELECTION_YR
+                graph.push(year)
+            cand.CAND_ELECTION_YR.add(year)
+
+            state = State.select(graph, data.CAND_OFFICE_ST ).first()
+            if not state:
+                state = State()
+                state.STATE = data.CAND_OFFICE_ST
+                graph.push(state)
+            cand.CAND_OFFICE_ST.add(state)
+
+            office = Office.select(graph, data.CAND_OFFICE).first()
+            if not office:
+                office = Office()
+                office.OFFICE = data.CAND_OFFICE
+                graph.push(office)
             cand.CAND_OFFICE.add(office)
 
+            district = District.select(graph, data.CAND_OFFICE_DISTRICT).first()
+            if not district:
+                district = District()
+                district.DISTRICT = data.CAND_OFFICE_DISTRICT
+                graph.push(district)
+            cand.CAND_OFFICE_DISTRICT.add(district)
 
 
             graph.push(cand)

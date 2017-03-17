@@ -32,6 +32,29 @@ class Candidate(GraphObject):
     CAND_OFFICE = RelatedTo("Office")
     CAND_OFFICE_DISTRICT = RelatedTo("District")
 
+    COM_CAND_ID = RelatedFrom("Committee", "CAND_ID")
+
+
+class Committee(GraphObject):
+    __primarykey__ = "CMTE_ID"
+
+    CMTE_ID = Property()
+    CMTE_NM = Property()
+    TRES_NM = Property()    # Treasures name
+    CMTE_ST1 = Property()
+    CMTE_ST2 = Property()
+    CMTE_DSGN = Property()
+    CMTE_TP = Property()
+    CMTE_FILING_FREQ = Property()
+    ORG_TP = Property()
+    CONNECTED_ORG_NM = Property()
+
+    # Related to
+    CMTE_CITY = RelatedTo("City")
+    CMTE_ZIP = RelatedTo("Zipcode")
+    CMTE_ST = RelatedTo("State")
+    CMTE_PTY_AFFILIATION = RelatedTo("Party")
+    CAND_ID = RelatedTo("Candidate")
 
 
 class Zipcode(GraphObject):
@@ -39,10 +62,14 @@ class Zipcode(GraphObject):
     ZIPCODE = Property()
     CAND_ZIP = RelatedFrom("Candidate", "CAND_ZIP")
 
+    CMTE_ZIP = RelatedFrom("Committee", "CMTE_ZIP")
+
 class City(GraphObject):
     __primarykey__ = "CITY"
     CITY = Property()
     CAND_CITY = RelatedFrom("Candidate", "CITY")
+
+    CMTE_CITY = RelatedFrom("Committee", "CMTE_CITY")
 
 class State(GraphObject):
     __primarykey__ = "STATE"
@@ -50,6 +77,7 @@ class State(GraphObject):
     STATE = Property()
     CAND_OFFICE_ST = RelatedFrom("Candidate", "STATE")
 
+    CMTE_ST = RelatedFrom("Committee", "CMTE_ST")
 
 class Status(GraphObject):
     __primarykey__ = "STATUS"
@@ -64,6 +92,7 @@ class Party(GraphObject):
     PARTY = Property()
     CAND_PTY_AFFILIATION = RelatedFrom("Candidate", "PARTY")
 
+    CMTE_PTY_AFFILIATION = RelatedFrom("Committee", "CMTE_PTY_AFFILIATION")
 
 class ElectionYear(GraphObject):
     __primarykey__ = "YEAR"
